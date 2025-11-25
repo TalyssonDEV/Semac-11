@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-// / Este widget representa o botão de adicionar categoria.
-// / Ele é separado propositalmente para fins educacionais,
-// / permitindo demonstrar aos alunos como criar e montar um
-// / botão que consome uma lógica existente em outro arquivo.
-// /
-// / Na aula, basta usar:
+/// Este widget representa o botão de adicionar categoria.
+/// Ele é separado propositalmente para fins educacionais,
+/// permitindo demonstrar aos alunos como criar e montar um
+/// botão que consome uma lógica existente em outro arquivo.
+///
+/// Na aula, basta usar:
 // Row(
 //   children: [
 //     Aula04CriandoBotoes(
@@ -18,7 +18,7 @@ import 'package:flutter/material.dart';
 //   ],
 // ),
 
-class ula04CriandoBotoes extends StatelessWidget {
+class Aula04CriandoBotoes extends StatelessWidget {
   final VoidCallback onPressed;
 
   const Aula04CriandoBotoes({super.key, required this.onPressed});

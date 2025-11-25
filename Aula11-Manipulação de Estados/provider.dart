@@ -1,133 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-// Modelo da Tarefa
-class Task {
-  final String title;
-  bool isDone;
-
-  Task(this.title, {this.isDone = false});
-}
-
-// CLASSE DE ESTADO (Provider)
-class TodoListProvider extends ChangeNotifier {
-  final List<Task> _tasks = [
-    Task('Estudar Flutter (SetState)', isDone: true),
-    Task('Criar Formulário (Provider)'),
-    Task('Implementar Menu (BLoC)'),
-  ];
-
-  List<Task> get tasks => _tasks;
-  
-  void addTask(String title) {
-    _tasks.add(Task(title));
-    notifyListeners(); // Notifica os Consumers de que o estado mudou
-  }
-  
-  void toggleTaskStatus(Task task) {
-    task.isDone = !task.isDone;
-    notifyListeners();
-  }
-}
-
-// WIDGET PRINCIPAL
 void main() {
-  // Define o Provider no topo da árvore de widgets
   runApp(
     ChangeNotifierProvider(
-      create: (context) => TodoListProvider(),
-      child: const TodoAppProvider(),
+      create: (context) => CounterProvider(),
+      child: MaterialApp(
+        home: HomeScreen(),
+      ),
     ),
   );
 }
 
-class TodoAppProvider extends StatelessWidget {
-  const TodoAppProvider({super.key});
-
+class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Gerenciamento de Tarefas (Provider)',
-      theme: ThemeData(primarySwatch: Colors.teal),
-      home: const TodoHomePageProvider(),
+    return Scaffold(
+      appBar: AppBar(title: Text('Exemplo com o Provider')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Screen1(),
+            SizedBox(height: 20),
+            Screen2(),
+          ],
+        ),
+      ),
     );
   }
 }
 
-class TodoHomePageProvider extends StatelessWidget {
-  const TodoHomePageProvider({super.key});
+class CounterProvider extends ChangeNotifier {
+  int _counter = 0;
 
+  int get counter => _counter;
+
+  void increment() {
+    _counter++;
+    notifyListeners();
+  }
+}
+
+class Screen1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Usamos .read para obter a instância do Provider para chamar métodos
-    final todoProviderActions = context.read<TodoListProvider>();
-    
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Minhas Tarefas (Provider - Consumer)'),
-      ),
-      body: Consumer<TodoListProvider>( 
-        builder: (context, todoProvider, child) {
-          // O Builder reconstrói APENAS a lista quando o estado muda
-          return ListView.builder(
-            itemCount: todoProvider.tasks.length,
-            itemBuilder: (context, index) {
-              final task = todoProvider.tasks[index];
-              return ListTile(
-                title: Text(
-                  task.title,
-                  style: TextStyle(
-                    decoration: task.isDone ? TextDecoration.lineThrough : null,
-                    color: task.isDone ? Colors.grey : Colors.black,
-                  ),
-                ),
-                trailing: Checkbox(
-                  value: task.isDone,
-                  onChanged: (bool? newValue) {
-                    // Chama a função do Provider para alterar o estado
-                    todoProvider.toggleTaskStatus(task);
-                  },
-                ),
-              );
-            },
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddTaskDialog(context, todoProviderActions),
-        child: const Icon(Icons.add),
-      ),
-    );
+    final counterProvider = Provider.of<CounterProvider>(context);
+    return Text('Contagem: ${counterProvider.counter}');
   }
+}
 
-  void _showAddTaskDialog(BuildContext context, TodoListProvider provider) {
-    final TextEditingController controller = TextEditingController();
-    
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Nova Tarefa'),
-          content: TextField(
-            controller: controller,
-            decoration: const InputDecoration(hintText: "Título da Tarefa"),
-            autofocus: true,
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancelar'),
-              onPressed: () => Navigator.of(dialogContext).pop(),
-            ),
-            ElevatedButton(
-              child: const Text('Adicionar'),
-              onPressed: () {
-                if (controller.text.isNotEmpty) {
-                  provider.addTask(controller.text);
-                  Navigator.of(dialogContext).pop();
-                }
-              },
-            ),
-          ],
+class Screen2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<CounterProvider>(
+      builder: (context, counterProvider, child) {
+        return ElevatedButton(
+          onPressed: () => counterProvider.increment(),
+          child: Text('Incrementar'),
         );
       },
     );
